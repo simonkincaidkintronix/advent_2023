@@ -139,6 +139,35 @@ void main(List<String> arguments) {
 
   // print('Finished, I think the total for part one is $total');
   print('Finished, I think the total for part two is $total');
+
+  // public int TotalCards()
+  //   {
+  //       int result = 0;
+
+  //       foreach (var card in this.Cards)
+  //       {
+  //           result += this.Scratch(card.Value);
+  //       }
+
+  //       return result;
+  //   }
+
+  //   private int Scratch(Card card)
+  //   {
+  //       int result = 0;
+  //       int i = 0;
+  //       result++;
+
+  //       foreach (int number in card.Numbers)
+  //       {
+  //           if (card.Winning.Contains(number))
+  //           {
+  //               result += this.Scratch(this.Cards[card.Number + ++i]);
+  //           }
+  //       }
+
+  //       return result;
+  //   }
 }
 
 

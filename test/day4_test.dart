@@ -79,17 +79,6 @@ void main() {
       return myWinningNumbers.length;
     }
 
-    List<int> getWinningNumbers(String card) {
-      List<String> parts = getParts(card, r':|\|');
-      int? cardId = getFirstNumeric(parts[0]);
-      List<int> winningNumbers = getAllNumerics(parts[1]);
-      List<int> myNumbers = getAllNumerics(parts[2]);
-      if (cardId == null) throw Exception('No card ID');
-      List<int> myWinningNumbers =
-          winningNumbers.where((winner) => myNumbers.contains(winner)).toList();
-      return myWinningNumbers;
-    }
-
     int getMyCardId(String card) {
       List<String> parts = getParts(card, r':|\|');
       int? cardId = getFirstNumeric(parts[0]);
@@ -101,40 +90,6 @@ void main() {
       return originalCards[cardId - 1];
     }
 
-    int? findLocation(id) {
-      for (int i = 0; i < puzzleInput.length; i++) {
-        // print('location $i');
-        if (getFirstNumeric(puzzleInput[i]) == id) {
-          return i;
-        }
-      }
-      return null;
-    }
-
-    int scratch(String card) {
-      int cardId = getMyCardId(card);
-      int result = 0;
-      int i = 0;
-      result++;
-      List<String> parts = getParts(card, r':|\|');
-      List<int> winningNumbers = getAllNumerics(parts[1]);
-      List<int> myNumbers = getAllNumerics(parts[2]);
-      List<int> myWinningNumbers =
-          winningNumbers.where((winner) => myNumbers.contains(winner)).toList();
-      myWinningNumbers.forEach((element) {
-        result += scratch(puzzleInput[cardId + ++i]);
-      });
-      return result;
-    }
-
-    int? totalResults() {
-      int result = 0;
-      for (int i = 0; i < puzzleInput.length; i++) {
-        result += scratch(puzzleInput[i]);
-      }
-      return result;
-    }
-
     List<String> getMyPrizes(int cardId, int score) {
       List<String> prizes = [];
       int startingId = cardId + 1;
@@ -144,13 +99,6 @@ void main() {
         prizes.add(getCopyOfCard(currentId));
       }
       return prizes;
-    }
-
-    int putInTheCorrectPlace(String cardCopy) {
-      var id = getMyCardId(cardCopy);
-      var location = findLocation(id);
-      return location ?? 0;
-      // print('Location: $location');
     }
 
     int moo(String baa) {
@@ -166,7 +114,7 @@ void main() {
       return result;
     }
 
-    int? simonsLastTryFuckThis() {
+    int? lastTry() {
       int totalCopies = 0;
       for (int i = 0; i < puzzleInput.length; i++) {
         totalCopies += moo(puzzleInput[i]);
@@ -175,7 +123,7 @@ void main() {
       return totalCopies + puzzleInput.length;
     }
 
-    expect(simonsLastTryFuckThis(), 30);
+    expect(lastTry(), 5554894);
 
     // expect(puzzleInput.length, 30);
   });

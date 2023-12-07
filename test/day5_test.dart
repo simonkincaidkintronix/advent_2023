@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:advent_2023/aoc_toolbox.dart';
 import 'package:test/test.dart';
@@ -134,37 +135,6 @@ void main() {
   // how do i load all these in
   // break it on new lines and
   //
-  test('D5:P1', () {
-    const String filename = 'data/dayfive-sample.txt';
-    List<String> puzzleInput = File(filename).readAsLinesSync();
-    // Reduce to just the 'maps'
-    puzzleInput.removeAt(0);
-    puzzleInput.removeAt(0);
-    var map = getDataAsMappedRecords(puzzleInput);
-    // expect(
-    //   map[0],
-    // ); // seed-to-soil
-    // if (map.isNotEmpty) {
-
-    List<(int, int, int)> x = map['seed-to-soil'] ?? [];
-    var destination = x[0].$1;
-    var source = x[0].$2;
-    var length = x[0].$3;
-
-    expect(destination, 50);
-    expect(source, 98);
-    expect(length, 2);
-
-    // for (var entry in map[0]) {
-    //   print('Key: ${entry.key}, Value: ${entry.value}');
-    //   for ((int, int, int) value in entry.value) {
-    //     var destination = value.$1;
-    //     var source = value.$2;
-    //     var length = value.$3;
-    //   }
-    // }
-    // };
-  });
 
   test('D5:P1 seed to soil test', () {
     const String filename = 'data/dayfive-sample.txt';
@@ -291,7 +261,7 @@ void main() {
     // The key here is NOT to have to build the List<ints> else
     // the script will blow up. But my tired brain cant see what
     // is probably an obvious solution so going back to step one.
-    const String filename = 'data/dayfive-summary.txt';
+    const String filename = 'data/dayfive-sample.txt';
     List<String> puzzleInput = File(filename).readAsLinesSync();
     List<int> seeds = getAllNumerics(puzzleInput[0]);
     puzzleInput.removeAt(0);
@@ -382,5 +352,120 @@ void main() {
       // int minValue = total.reduce((a, b) => a < b ? a : b);
       print(minValue);
     }
+  });
+
+  test('D5:Part One done nicer', () {
+    int? searchMap(int needle, List<(int, int, int)> haystack) {
+      bool continueSearch = true;
+      for (var loop = 0; loop < haystack.length; loop++) {
+        if (continueSearch == false) break;
+        if (needle >= haystack[loop].$2) {
+          // dont make the second calculation needlessly
+          if (needle <= haystack[loop].$2 + haystack[loop].$3) {
+            continueSearch = false;
+            // will need to calculate difference here within scope of map
+            var difference = haystack[loop].$1 - haystack[loop].$2; // 2
+            return needle + difference;
+          }
+        }
+      }
+      return needle;
+    }
+
+    const String filename = 'data/dayfive.txt';
+    List<String> puzzleInput = File(filename).readAsLinesSync();
+    List<int> seeds = getAllNumerics(puzzleInput[0]);
+    // expect(seeds.length % 2, 0);
+    puzzleInput.removeAt(0);
+    puzzleInput.removeAt(0);
+    var structuredData = getDataAsMappedRecords(puzzleInput);
+
+    List<int> possibles = [];
+    for (var seed in seeds) {
+      var tracker = seed;
+      structuredData.forEach((seedName, seedMaps) {
+        var temp = tracker;
+        tracker = searchMap(tracker, seedMaps) ?? -1;
+        print('$temp --> $seedName --> $tracker');
+      });
+      possibles.add(tracker);
+    }
+    print(possibles.reduce(min));
+    return possibles.reduce(min);
+
+    // now try part two
+  });
+
+  test('D5:Part Two Reverse ', () {
+    int? searchMap(int needle, List<(int, int, int)> haystack) {
+      bool continueSearch = true;
+      for (var loop = 0; loop < haystack.length; loop++) {
+        if (continueSearch == false) break;
+        if (needle >= haystack[loop].$2) {
+          // dont make the second calculation needlessly
+          if (needle <= haystack[loop].$2 + haystack[loop].$3) {
+            continueSearch = false;
+            // will need to calculate difference here within scope of map
+            var difference = haystack[loop].$1 - haystack[loop].$2; // 2
+            return needle + difference;
+          }
+        }
+      }
+      return needle;
+    }
+
+    const String filename = 'data/dayfive.txt';
+    List<String> puzzleInput = File(filename).readAsLinesSync();
+    List<int> seeds = getAllNumerics(puzzleInput[0]);
+    // expect(seeds.length % 2, 0);
+    puzzleInput.removeAt(0);
+    puzzleInput.removeAt(0);
+    var structuredData = getDataAsMappedRecords(puzzleInput);
+
+    int finalLocation = 1000000;
+    bool foundLocation = false;
+
+    for (finalLocation; foundLocation == false; finalLocation++) {
+      List<MapEntry<String, List<(int, int, int)>>> reversedEntries =
+          structuredData.entries.toList().reversed.toList();
+      var tracker = finalLocation;
+      for (var entry in reversedEntries) {
+        // print('$tracker Key: ${entry.key}, Value: ${entry.value}');
+        bool found = false;
+        entry.value.forEach((element) {
+          if (found == false) {
+            var testResult = tracker + (element.$2 - element.$1);
+            if (testResult >= element.$2 &&
+                (testResult < (element.$2 + element.$3))) {
+              tracker = testResult;
+              // print('found $testResult in ${element.$2}');
+              found = true;
+            } else {
+              // print('notfound');
+            }
+          }
+          // is this in the range
+        });
+      }
+      // check if its in a seed range
+      for (var x = 0; x < seeds.length; x += 2) {
+        int start = seeds[x];
+        int end = seeds[x + 1];
+
+        if (tracker >= start) {
+          if (tracker <= start + end) {
+            print(
+                '$finalLocation Location --> Seed --> $tracker --> Found in a seed');
+            foundLocation = true;
+            break;
+          }
+        } else {
+          print('$finalLocation Location Not Found');
+        }
+      }
+    }
+    // List<int> newSeedNumberRange = getRange(start, end);
+
+    // now try part two
   });
 }
